@@ -5,22 +5,54 @@
 
     std::random_device device_num; // Random number generated from hardware 
     std::mt19937 mt_num(device_num()); // mt19937: Mersenne Twister pseudo-random generator 
-    std::uniform_int_distribution<> rooms(1, 5);  // Value range 1 to 5
+    std::uniform_int_distribution<> room_dist(1, 5);  // Value range 1 to 5
+    std::uniform_int_distribution<> area_dist(25, 1000);  // Value range 25m^2 to 1500m^2
+    
+    // Calculate appropriate noise distribution level based on average house price
+    void calc_noise(std::vector <double>& data_in){ // Pass by reference alters original dataset, return nothing
+        double current_sum = 0;
+        for (int i=0; i<100; i++){
+            current_sum = current_sum + data_in[i];
+        }
+        double average_val = current_sum/100;
+        double standard_dev= average_val*0.05;
+        std::cout<<"average price: "<<average_val<<std::endl;
+        // Gaussian White Noise
+        std::normal_distribution<double> noise_dist(0.0, standard_dev); // Mean = 0.0, standar dev to be calculated
 
+        for (int i=0; i<100; i++){
+            double noise = noise_dist(mt_num);
+            data_in[i]=data_in[i]+noise;
+        }
+    }
 
 int main() {
     int data_points = 100;  // rows: # of data points
     int num_variables = 3; // columns: land size, # of bedrooms, y-intercept
 
-    // 100x2 matrix, initialise all points with value of 0.0
+    // 100x3 matrix, initialise all points with value of 0.0
     std::vector<std::vector<double>> raw_data(data_points, std::vector<double>(num_variables, 0.0)); 
+    // Initialise vector for calculating house prices
+    std::vector <double> house_prices(100); 
 
-
-    // Generate bedroom data points with equation form y = mx + c
     for (int i=0; i<100; i++) {
-        bedroom[i]=rooms(mt_num);
-        house_prices[i] = 50*bedroom[i]+100; // m = 50, c = 100
+        const double intercept = 50000; // Intercept value, unchanged
+        double bedroom = room_dist(mt_num);   // Generate bedroom value
+        double area = area_dist(mt_num);    // Generate land area 
+
+        raw_data[i][0] = intercept; // Store intercept value in first column
+        raw_data[i][1] = bedroom; // Store bedroom value in second column
+        raw_data[i][2] = area;    // Store land size in third column
+        
+        const double W_bedroom = 5000;    // 5000 pounds per bedroom added
+        const double W_area = 1600; // 1600 pounds per square meter 
+
+        // Generate bedroom data points with equation form y = w1*x1 + w2*x2 + c
+        house_prices[i] = raw_data[i][0]+W_bedroom*raw_data[i][1]+W_area*raw_data[i][2];
     }
+
+    
+    calc_noise(house_prices);
 
     // Open a file named "prices.csv"
     std::ofstream myFile("prices.csv");
@@ -29,11 +61,17 @@ int main() {
     if (myFile.is_open()) { 
         // Add headers for clarity 
         // .csv file stands for "comma separated values" --> "Number of Bedrooms" will print in next column
-        myFile << "Price" << "," << "Number of Bedrooms" <<std::endl; // Use comma as separator
+        myFile << "Price" << "," 
+        << "Intercept" << ","
+        << "Number of Bedrooms" << ","
+        << "Land Size" << "\n"; // Use comma as separator
 
         // Write house prices and bedroom # vectors into file
         for (int i=0; i<100; i++) {
-            myFile << house_prices[i]<< "," <<bedroom[i] << std::endl; // Comma as separator to print in respective column
+            myFile << house_prices[i]<< "," 
+            <<raw_data[i][0] << ","
+            <<raw_data[i][1] << ","
+            <<raw_data[i][2] << "\n"; // Comma as separator to print in respective column
         }
 
         // Close file
