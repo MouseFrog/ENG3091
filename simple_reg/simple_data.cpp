@@ -5,18 +5,11 @@
 
     std::random_device device_num; // Random number generated from hardware 
     std::mt19937 mt_num(device_num()); // mt19937: Mersenne Twister pseudo-random generator 
-    std::uniform_int_distribution<> distribute(1, 5);  // Value range 1 to 5
-
-    // std::uniform_real_distribution<type> name(min,max) // for price --> double and no integer
+    std::uniform_int_distribution<> room_dist(1, 5);  // Value range 1 to 5
+    // mean = 0.0, standard deviation = 25.0
+    std::normal_distribution<double> noise_dist(0.0, 25.0);
 
 int main() {
-
-    int data_points = 100;  // rows: # of data points
-    int num_variables = 3; // columns: land size, # of bedrooms, y-intercept
-
-    // 100x2 matrix, initialise all points with value of 0.0
-    std::vector<std::vector<double>> raw_data(data_points, std::vector<double>(num_variables, 0.0)); 
-/*
     // Initialise vectors with data type double, with 100 points
     std::vector<double> house_prices(100); 
     std::vector <double> bedroom(100); 
@@ -24,10 +17,11 @@ int main() {
 
     // Generate bedroom data points with equation form y = mx + c
     for (int i=0; i<100; i++) {
-        bedroom[i]=distribute(mt_num);
-        house_prices[i] = 50*bedroom[i]+100; // m = 50, c = 100
+        bedroom[i]=room_dist(mt_num);
+        double noise = noise_dist(mt_num);
+        house_prices[i] = 50*bedroom[i]+ 100 +noise; // m = 50, c = 100, noise added
     }
-*/
+
     // Open a file named "prices.csv"
     std::ofstream myFile("prices.csv");
 
