@@ -19,36 +19,38 @@ int main() {
 }
 
 //Multiple Linear Regression
-
 class MultipleLinearRegression {
-    std::vector<double> weights; // Includes intercept at weights[0]
+    std::vector<double> weights; 
     double learningRate;
 
 public:
-    MultipleLinearRegression(int numFeatures, double lr = 0.01) : learningRate(lr) {
+    MultipleLinearRegression(int numFeatures, double lr = 0.01) : learningRate(lr) {   
+        // Create vector of size according to # of variables, fill with 0.0
+        // +1 to include intercept at weights[0]
         weights.resize(numFeatures + 1, 0.0); 
     }
 
     void train(const std::vector<std::vector<double>>& X, const std::vector<double>& y, int epochs) {
-        int m = X.size();    // Number of samples
-        int n = X[0].size(); // Number of features
+        int m = X.size();    // Number of samples, row
+        int n = X[0].size(); // Number of features, col
 
-        for (int e = 0; e < epochs; e++) {
-            std::vector<double> gradients(n + 1, 0.0);
+        for (int e = 0; e < epochs; e++) {  // # of iterations
+            std::vector<double> gradients(n + 1, 0.0);  
 
+            
             for (int i = 0; i < m; i++) {
-                double prediction = weights[0]; // Intercept
                 for (int j = 0; j < n; j++) {
-                    prediction += weights[j + 1] * X[i][j];
+                    prediction += weights[j] * X[i][j]; // Predicted y-val based on weights and x-val
                 }
-
-                double error = prediction - y[i];
-                gradients[0] += error;
+                
+                 // Calculate error in y-val prediction
+                double error = prediction - y[i];  
+                //gradients[0] += error;
                 for (int j = 0; j < n; j++) {
-                    gradients[j + 1] += error * X[i][j];
+                    //gradients[j + 1] += error * X[i][j];
+                    gradients[j] += error * X[i][j];
                 }
             }
-
             // Update weights using the average gradient
             for (int j = 0; j <= n; j++) {
                 weights[j] -= (learningRate * gradients[j]) / m;
