@@ -41,7 +41,7 @@ public:
 
         // Summation of all data points per variable manipulatoin
         for (int i = 0; i < n; i++) {
-            double var_col = x[i][1]    // Extract variable column, ignore intercept column
+            double var_col = x[i];    // Extract variable column, ignore intercept column
             sumX += var_col;
             sumY += y[i];
             sumXY += var_col * y[i];
