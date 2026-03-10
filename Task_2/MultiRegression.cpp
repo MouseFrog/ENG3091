@@ -1,9 +1,8 @@
 #include "MultiRegression.hpp"
 DataGenerator::DataGenerator(Dataset c) : data(c) {    
     std::random_device device_num;
-    mt_num.seed(device_num()); 
+    mt_num.seed(device_num());  // Initialised in constructor, so as not to overload cpu in repeated calls
 }
-
     // Create instance from Matrices struct and fills it up to output to user 
     // Generate X (intercept+variables) and Y (price) matrices based on user input 
 Matrices DataGenerator::make_matrix(int sample_size, int num_features){    // Input # features and # data points
@@ -19,6 +18,7 @@ Matrices DataGenerator::make_matrix(int sample_size, int num_features){    // In
     }
 
 // Generate random value for variable
+// Gets new random value from the same seeded mt19337 
 double DataGenerator::getRandomValue(double min, double max){  // Specify value range
     std::uniform_real_distribution<> variable_dist(min,max);
     double variable_val = variable_dist(mt_num);    
@@ -67,6 +67,11 @@ void DataGenerator::calc_noise(std::vector <double>& price_matrix){ // Pass by r
         double noise = noise_dist(mt_num);  
         price_matrix[i]+= noise;
     }
+}
+
+// Allow new dataset to be used without needing to seed DataGenerator again
+void DataGenerator::updateSettings(Dataset new_c) {
+    data = new_c; // Swap the private 'data' struct
 }
 
 // Iterate through matrix and save into .csv file
