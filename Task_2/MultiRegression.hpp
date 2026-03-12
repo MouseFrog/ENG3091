@@ -24,9 +24,14 @@ struct Dataset {
 // Used to create matrix instances
 struct Matrices { 
     std::vector<std::vector<double>> X;
-    std::vector<double> Y;
+    std::vector<std::vector<double>> Y;
 };
 
+struct NormResult {
+    std::vector<std::vector<double>> matrix;
+    std::vector<double> means;
+    std::vector<double> std_devs;
+};
 
 // DataGenerator Class
 class DataGenerator {
@@ -42,14 +47,11 @@ public:
     double getRandomValue(double min, double max);
     int getRandomValue(int min, int max);
 
-    void generate_data(std::vector<std::vector<double>>& var_matrix, std::vector<double>& price_matrix);
-    void calc_noise(std::vector<double>& price_matrix);
+    void generate_data(std::vector<std::vector<double>>& var_matrix, std::vector<std::vector<double>>& price_matrix);
+    void calc_noise(std::vector<std::vector<double>>& price_matrix);
 
     void updateSettings(Dataset new_c);
 };
-
-// Save file function
-void saveFile(const std::vector<std::vector<double>>& data_in, std::string file_name);
 
 class GradientDescent {
     private: 
@@ -59,10 +61,13 @@ class GradientDescent {
     public:
     GradientDescent(int numFeatures, double lr = 0.01);
 
-    void train(const std::vector<std::vector<double>>& X, const std::vector<double>& Y, int iteration);
+    void train(const std::vector<std::vector<double>>& X, const std::vector<std::vector<double>>& Y, int iteration);
     std::vector<double> getWeights() const;
-
-
 };
+
+// Save file function
+void saveFile(const std::vector<std::vector<double>>& data_in, std::string file_name);
+
+NormResult normaliseData(const std::vector<std::vector<double>>& var_matrix);
 
 #endif
