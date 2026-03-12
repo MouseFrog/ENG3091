@@ -19,8 +19,7 @@ int main() {
     // Insert a new row at the end
     v.push_back({7, 8, 9});
     
-    // Insert value in 2nd 
-    // row at 2nd position
+    // Insert value in 2nd row at 2nd position
     v[1].insert(v[1].begin() + 1, 4);
     
     // Access first element 
