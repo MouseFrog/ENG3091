@@ -3,7 +3,7 @@ DataGenerator::DataGenerator(Dataset c) : data(c) {
     std::random_device device_num;
     mt_num.seed(device_num());  // Initialised in constructor, so as not to overload cpu in repeated calls
 }
-    // Create instance from Matrices struct and fills it up to output to user 
+    // Create instance from Matrices struct 
     // Generate X (intercept+variables) and Y (price) matrices based on user input 
 Matrices DataGenerator::make_matrix(int sample_size, int num_features){    // Input # features and # data points
         Matrices matrix; 
@@ -83,7 +83,7 @@ void saveFile(const std::vector<std::vector<double>>& data_in, std::string file_
     // Check if file opened correctly
     if (myFile.is_open()) { 
         
-        // Iterate through row and column
+        // Iterate through row and column 
         for (int i=0; i<data_in.size(); i++) {
             for (int j=0; j<data_in[i].size(); j++){
                 myFile << data_in[i][j];

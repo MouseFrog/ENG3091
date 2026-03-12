@@ -51,4 +51,18 @@ public:
 // Save file function
 void saveFile(const std::vector<std::vector<double>>& data_in, std::string file_name);
 
+class GradientDescent {
+    private: 
+    std::vector<double> weights; // Vector holding weights and intercept
+    double learningRate;    // Step-size
+
+    public:
+    GradientDescent(int numFeatures, double lr = 0.01);
+
+    void train(const std::vector<std::vector<double>>& X, const std::vector<double>& Y, int iteration);
+    std::vector<double> getWeights() const;
+
+
+};
+
 #endif

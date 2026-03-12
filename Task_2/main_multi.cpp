@@ -13,13 +13,19 @@ int main() {
     custom.area_max = 1400;
 
     DataGenerator gen(custom); // Create instance with custom settings
-    Matrices myMatrix = gen.make_matrix(100,2) ;
+    int num_features{2};
+    Matrices myMatrix = gen.make_matrix(100,num_features);
 
-    const std::vector<std::vector<double>>& variableMatrix = myMatrix.X;
-    const std::vector<double>& priceMatrix = myMatrix.Y;
+    GradientDescent mlr(num_features,0.001);
+    int num_iterations{10};
+    mlr.train(myMatrix.X,myMatrix.Y,num_iterations);
+    std::vector<double> finalWeights = mlr.getWeights();
 
+    std::cout<<finalWeights[0]<<"\n"
+    <<finalWeights[1]<<"\n"
+    <<finalWeights[2]<<"\n";
 
-    saveFile(variableMatrix,"og file" );
+    saveFile(myMatrix.X,"og file" );
     
     return 0;
 }    
