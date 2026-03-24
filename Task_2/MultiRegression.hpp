@@ -88,7 +88,9 @@ class GradientDescent {
 };
 
 // Save file function
-void saveFile(const std::vector<std::vector<double>>& data_in, std::string file_name);
+void saveFile(const std::vector<std::vector<double>>& X, 
+              const std::vector<std::vector<double>>& Y,
+              std::string file_name);
 
 // Normalises data for gradient descent 
 NormResult normaliseData(const std::vector<std::vector<double>>& var_matrix);

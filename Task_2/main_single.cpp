@@ -23,9 +23,9 @@ int main() {
     norm_model.train(singleMatrix.X, singleMatrix.Y);
 
     std::pair<double,double> norm_weights = norm_model.getWeights();
-    std::cout<<"Best fit inctercept: "
-             <<norm_weights.first
-             <<"gradient: "
+    std::cout<<"Normal Gradient inctercept: "
+             <<norm_weights.first<< "\n"
+             <<"Normal Gradient gradient: "
              <<norm_weights.second<<std::endl;
     double interpolate_x {5};
     double predict_price = norm_model.predict(5.0);
@@ -59,6 +59,7 @@ int main() {
     "Intercept std_dev: "<<norm_data.std_devs[0]<<"\n"<<
     "Bedroom std_dev: "<<norm_data.std_devs[1]<<"\n";
 
+    saveFile(singleMatrix.X,singleMatrix.Y,"SingleVariableData" );
 
     return 0;
 }

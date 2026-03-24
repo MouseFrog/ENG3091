@@ -1,3 +1,6 @@
+// g++ main_multi.cpp DataGenerator.cpp GradientDescent.cpp Utilities.cpp
+// Copy above command for compiling
+
 #include <iostream>
 #include <vector>   // for std::vector
 #include <fstream>  // Required for file operations
@@ -29,7 +32,7 @@ int main() {
     std::vector<double> model_weights = grad_model.getWeights();   
 
     // Recover de-normalised results
-     
+
     // real weight = normalised weight/standard deviation
     double real_bedroom = model_weights[1]/norm_X.std_devs[1];  
     double real_area = model_weights[2]/norm_X.std_devs[2];
@@ -37,23 +40,25 @@ int main() {
     // real intercept = normalised intercept - sum of (variable real weights * variable mean values)
     double real_intercept = model_weights[0]-(real_bedroom * norm_X.means[1])-(real_area * norm_X.means[2]);
 
+    std::cout <<
+    "Multi Intercept: "<<real_intercept<<"\n"<<
+    "Multi Bedroom Weight: "<<real_bedroom<<"\n"<<
+    "Multi Area Weight: "<<real_area<<"\n";
+
+    /*
     std::cout<<
     "Model Intercept: "<<model_weights[0]<<"\n"<<
     "Model Bedroom Weight: "<<model_weights[1]<<"\n"<<
     "Model Area Weight: "<<model_weights[2]<<"\n";
 
-    std::cout <<
-    "Real Intercept: "<<real_intercept<<"\n"<<
-    "Real Bedroom Weight: "<<real_bedroom<<"\n"<<
-    "Real Area Weight: "<<real_area<<"\n";
-
     std::cout<<
     "Intercept std_dev: "<<norm_X.std_devs[0]<<"\n"<<
     "Bedroom std_dev: "<<norm_X.std_devs[1]<<"\n"<<
     "Area std_dev: "<<norm_X.std_devs[2]<<"\n";
+    */
+    saveFile(multiMatrix.X,multiMatrix.Y,"MultiVariableData");
 
-    saveFile(myMatrix.X,myMatrix.Y,"Dataset_1" );
-    
+
     return 0;
 }    
 
