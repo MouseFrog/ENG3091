@@ -1,120 +1,64 @@
-// Main program for testing single-variable linear regression
-// Generates a dataset, trains the model, and prints the results
+// g++ main_single.cpp DataGenerator.cpp GradientDescent.cpp Normal.cpp Utilities.cpp
+// Copy above command for compiling
+
 #include <iostream>
 #include <vector>
 #include <fstream>
 #include <random>
-
-#include "LinearRegression.hpp"
+#include "MultiRegression.hpp"
 
 int main() {
 
-    // Create the random generator used for producing bedroom values and noise
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    // Instantiate object gen using instance of Dataset custom with default values
+    Dataset custom;
+    DataGenerator gen(custom);
 
-    // Random bedroom values between 1 and 5
-    std::uniform_int_distribution<int> bedroom_dist(1, 5);
+    // Generate matrix with 1 independent variable
+    int data_points{100};
+    int num_features{1};
+    Matrices singleMatrix = gen.make_matrix(data_points,num_features);
 
-    // Noise added to price
-    std::uniform_real_distribution<double> price_noise(-4000.0, 4000.0);
+    // NORMAL GRADIENT MODEL
+    Normal norm_model;
+    norm_model.train(singleMatrix.X, singleMatrix.Y);
 
-
-    // The orignal slope and intercept used to generate the dataset
-    double true_price_per_bedroom = 50000.0;
-    double true_base_price = 50000.0;
-
-    int num_houses = 100;
-
-
-    // Store the generated bedroom and price values
-    std::vector<double> bedroom_values;
-    std::vector<double> price_values;
-
-    // Open CSV file to store the generated dataset
-    std::ofstream myFile("prices.csv");
-
-    // If the file cannot be opened, print an error and stop the program
-    if (!myFile.is_open()) {
-        std::cout << "Error: could not open prices.csv for writing." << std::endl;
-        return 1;
-    }
-
-    // Column headers for the CSV file
-    myFile << "Bedrooms,Price\n";
+    std::pair<double,double> norm_weights = norm_model.getWeights();
+    std::cout<<"Best fit inctercept: "
+             <<norm_weights.first
+             <<"gradient: "
+             <<norm_weights.second<<std::endl;
+    double interpolate_x {5};
+    double predict_price = norm_model.predict(5.0);
+    std::cout<<"Predicted price based on Normal method:"<<predict_price<<std::endl;
 
 
-    // Generate the dataset used for training the regression model
-    // Each iteration creates one house entry
-    for (int i = 0; i < num_houses; i++) {
 
-        double bedrooms = bedroom_dist(gen);
+    // GRADIENT DESCENT MODEL
+    // Normalise data to prep for calculations
+    NormResult norm_data = normaliseData(singleMatrix.X);
 
-        // Compute the price using the true model with added noise
-        double price =
-            (true_price_per_bedroom * bedrooms)
-            + true_base_price
-            + price_noise(gen);
+    GradientDescent grad_model(num_features,0.1);  // Learning rate = 0.1
+    int num_iterations{100000}; 
+    grad_model.train(norm_data.matrix,singleMatrix.Y,num_iterations);
 
-        // Store values so the regression model can train on them
-        bedroom_values.push_back(bedrooms);
-        price_values.push_back(price);
+    // Normalised weights
+    std::vector<double> grad_weights = grad_model.getWeights();   
 
-        // Also write the same data to the CSV file
-        myFile << bedrooms << "," << price << "\n";
-    }
-
-    // Close the dataset file once writing is finished
-    myFile.close();
-
-    std::cout << "Data written to prices.csv" << std::endl;
+    // Recover de-normalised results
+    // real weight = normalised weight/standard deviation
+    double real_gradient = grad_weights[1]/norm_data.std_devs[1];  
+    // real intercept = normalised intercept - sum of (variable real weights * variable mean values)
+    double real_intercept = grad_weights[0]-(real_gradient * norm_data.means[1]);
 
 
-    // Train using Normal Equation
-    SimpleLinearRegression normal_model;
-    normal_model.train(bedroom_values, price_values);
+    std::cout <<
+    "Gradient Descent Intercept: "<<real_intercept<<"\n"<<
+    "Gradient Descent Gradient: "<<real_gradient<<"\n";
 
-    // Train using Gradient Descent
-    SimpleLinearRegression gradient_model;
+    std::cout<<
+    "Intercept std_dev: "<<norm_data.std_devs[0]<<"\n"<<
+    "Bedroom std_dev: "<<norm_data.std_devs[1]<<"\n";
 
-    gradient_model.train_gradient(
-        bedroom_values,
-        price_values,
-        0.01,   // learning rate
-        5000    // iterations
-    );
-
-
-    // Print Normal Equation results
-    std::cout << "\n--- Normal Equation Results ---" << std::endl;
-
-    std::cout << "Estimated price per bedroom (w): "
-              << normal_model.w
-              << " | True: "
-              << true_price_per_bedroom
-              << std::endl;
-
-    std::cout << "Estimated base price (b): "
-              << normal_model.b
-              << " | True: "
-              << true_base_price
-              << std::endl;
-
-
-    // Print Gradient Descent results
-    std::cout << "\n--- Gradient Descent Results ---" << std::endl;
-
-    std::cout << "Estimated price per bedroom (w): "
-              << gradient_model.w
-              << " | True: "
-              << true_price_per_bedroom
-              << std::endl;
-
-    std::cout << "Estimated base price (b): "
-              << gradient_model.b
-              << " | True: "
-              << true_base_price
-              << std::endl;
 
     return 0;
 }

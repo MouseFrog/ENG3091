@@ -27,6 +27,8 @@ struct Matrices {
     std::vector<std::vector<double>> Y;
 };
 
+// Normalised matrix and associated characteristics
+// mean and standard deviation
 struct NormResult {
     std::vector<std::vector<double>> matrix;
     std::vector<double> means;
@@ -34,6 +36,7 @@ struct NormResult {
 };
 
 // DataGenerator Class
+// Generates flexible sized matrices
 class DataGenerator {
 private:
     std::mt19937 mt_num;
@@ -53,6 +56,25 @@ public:
     void updateSettings(Dataset new_c);
 };
 
+
+// Normal Gradient Calculation class
+class Normal {
+public:
+
+    double w = 0.0;   // slope of the line
+    double b = 0.0;   // y-intercept
+
+    // Normal method calculations
+    void train(const std::vector<std::vector<double>>& X,
+               const std::vector<std::vector<double>>& Y);
+
+    std::pair<double,double> getWeights() const;
+                    
+    // Predicts price 
+    double predict(double bedrooms);
+};
+
+// Gradient Descent Calculation class
 class GradientDescent {
     private: 
     std::vector<double> weights; // Vector holding weights and intercept
@@ -68,6 +90,7 @@ class GradientDescent {
 // Save file function
 void saveFile(const std::vector<std::vector<double>>& data_in, std::string file_name);
 
+// Normalises data for gradient descent 
 NormResult normaliseData(const std::vector<std::vector<double>>& var_matrix);
 
 #endif

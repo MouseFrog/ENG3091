@@ -14,15 +14,11 @@ public:
     double w = 0.0;   // slope of the line
     double b = 0.0;   // y-intercept
 
-    void train(const std::vector<double>& bedroom_values,
-               const std::vector<double>& price_values);
+    // Normal method calculations
+    void train(const std::vector<std::vector<double>>& X,
+               const std::vector<std::vector<double>>& Y);
 
-   
-    // Gradient descent training
-    void train_gradient(const std::vector<double>& bedroom_values,
-                        const std::vector<double>& price_values,
-                        double learning_rate,
-                        int num_iterations);
+    std::pair<double> 
                     
     // Predicts price 
     double predict(double bedrooms);

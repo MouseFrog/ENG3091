@@ -12,22 +12,28 @@ int main() {
 
     // Generate Matrix with custom settings
     DataGenerator gen(custom); 
+    int data_points{100};
     int num_features{2};
-    Matrices myMatrix = gen.make_matrix(100,num_features);  // 100x3 matrix
+
+    Matrices multiMatrix = gen.make_matrix(data_points,num_features);  // 100x3 matrix
 
     // Normalise data
-    NormResult norm_X =  normaliseData(myMatrix.X);
+    NormResult norm_X =  normaliseData(multiMatrix.X);
 
     // Train model
-    GradientDescent mlr(num_features,0.1);  // Learning rate = 0.1
+    GradientDescent grad_model(num_features,0.1);  // Learning rate = 0.1
     int num_iterations{100000}; 
-    mlr.train(norm_X.matrix,myMatrix.Y,num_iterations);
-    std::vector<double> model_weights = mlr.getWeights();   // Weights (normalised)
+    grad_model.train(norm_X.matrix,multiMatrix.Y,num_iterations);
 
-    // Recover de-normalised weights 
+    // Normalised weights
+    std::vector<double> model_weights = grad_model.getWeights();   
+
+    // Recover de-normalised results
+     
     // real weight = normalised weight/standard deviation
     double real_bedroom = model_weights[1]/norm_X.std_devs[1];  
     double real_area = model_weights[2]/norm_X.std_devs[2];
+
     // real intercept = normalised intercept - sum of (variable real weights * variable mean values)
     double real_intercept = model_weights[0]-(real_bedroom * norm_X.means[1])-(real_area * norm_X.means[2]);
 
@@ -46,8 +52,7 @@ int main() {
     "Bedroom std_dev: "<<norm_X.std_devs[1]<<"\n"<<
     "Area std_dev: "<<norm_X.std_devs[2]<<"\n";
 
-    saveFile(myMatrix.X,"variables" );
-    saveFile(myMatrix.Y,"prices");
+    saveFile(myMatrix.X,myMatrix.Y,"Dataset_1" );
     
     return 0;
 }    

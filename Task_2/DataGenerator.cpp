@@ -1,6 +1,6 @@
 #include "MultiRegression.hpp"
 
-// This file consists Data Generator Class
+// This file holds the Data Generator Class
 
 DataGenerator::DataGenerator(Dataset c) : data(c) {    
     std::random_device device_num;

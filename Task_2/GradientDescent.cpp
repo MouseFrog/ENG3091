@@ -13,28 +13,31 @@ void GradientDescent::train(const std::vector<std::vector<double>>& X,
                             int iteration) {
 
     int m = X.size();    // Number of samples, row
-    int n = X[0].size(); // # of weights including intercept
+    int n = X[0].size(); // # of weights including intercept, col
 
-    for (int e = 0; e < iteration; e++) {  // # of iteration
+    for (int e = 0; e < iteration; e++) {  // # of iterations
         std::vector<double> gradients(n, 0.0);  
 
         for (int i = 0; i < m; i++) {
+
             double y_prediction{0};
 
             for (int j = 0; j < n; j++) {
-                y_prediction += weights[j] * X[i][j]; // addition of all weight*x-val in row i
+                y_prediction += weights[j] * X[i][j]; // Summation of weight * x-value for all variables 
             }
-            // Error in predicted y
+
+            // Discrepancy in y value prediction
             double error = y_prediction - Y[i][0];  
 
             for (int j = 0; j < n; j++) {
                 gradients[j] += error * X[i][j]; // Calculate errors proportional to each data point
             }
         }
-        // Update weights using the average gradient
-        // Take one step size away from calculated error
+
+        // Update weights using average gradient
+        // Takes one step size away from calculated error
         for (int j = 0; j < n; j++) {
-            weights[j] -= (learningRate * gradients[j]) * (2.0/m);    // 2.0 to force floating pt calculations
+            weights[j] -= (learningRate * gradients[j]) * (2.0/m);    // 2.0 to force floating pt. calculations
         }
     }
 }
