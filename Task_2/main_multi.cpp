@@ -10,12 +10,15 @@
 
 int main() {
 
+    std::random_device device_num;
+    std::mt19937 global_num(device_num());
+
     // Create Dataset instance and define parameters, otherwise uses default
     Dataset custom;
     custom.w_bedroom = 20000.0;
 
     // Generate Matrix with custom settings
-    DataGenerator gen(custom); 
+    DataGenerator gen(custom,global_num); 
     int data_points{100};
     int num_features{2};
 
@@ -60,7 +63,7 @@ int main() {
     "Bedroom std_dev: "<<norm_X.std_devs[1]<<"\n"<<
     "Area std_dev: "<<norm_X.std_devs[2]<<"\n";
     */
-    
+
     saveFile(multiMatrix.X,multiMatrix.Y,"MultiVariableData");
 
 

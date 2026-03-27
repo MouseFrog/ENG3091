@@ -10,9 +10,12 @@
 
 int main() {
 
+    std::random_device device_num;
+    std::mt19937 global_num(device_num());
+
     // Instantiate object gen using instance of Dataset custom with default values
     Dataset custom;
-    DataGenerator gen(custom);
+    DataGenerator gen(custom,global_num);
 
     // Generate variables matrix
     int data_points{100};   // Sample size 100

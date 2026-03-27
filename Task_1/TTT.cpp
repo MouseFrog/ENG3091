@@ -7,8 +7,10 @@
 // Get user input 
 int manual_move(std::string input_prompt) {
     while (true) { 
+        
         std::cout << input_prompt << std::endl;
-        // Validate input via type and range
+
+        // Validate input 
         int input_value;
         if (std::cin >> input_value){ // If input is integer, pass from std::cin buffer into input_value variable
             if (input_value < 10 && input_value > 0) { // Check input range

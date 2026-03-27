@@ -39,11 +39,11 @@ struct NormResult {
 // Generates flexible sized matrices
 class DataGenerator {
 private:
-    std::mt19937 mt_num;
+    std::mt19937& mt_num;
     Dataset data;
 
 public:
-    DataGenerator(Dataset c);
+    DataGenerator(Dataset c, std::mt19937& global_num);
     Matrices make_matrix(int sample_size, int num_features);
     
     // Function Overloading

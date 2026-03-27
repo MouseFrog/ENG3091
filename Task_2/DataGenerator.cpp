@@ -2,10 +2,8 @@
 
 // This file holds the Data Generator Class
 
-DataGenerator::DataGenerator(Dataset c) : data(c) {    
-    std::random_device device_num;
-    mt_num.seed(device_num());  // Initialised in constructor, so as not to overload cpu in repeated calls
-}
+DataGenerator::DataGenerator(Dataset c, std::mt19937& global_num) : data(c), mt_num(global_num) {    
+    }
 // MAIN MATRIX GENERATOR 
 Matrices DataGenerator::make_matrix(int sample_size, int num_features){    // Input # features and # data points
         Matrices matrix; 
