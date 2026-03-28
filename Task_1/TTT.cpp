@@ -14,26 +14,29 @@ int manual_move(std::string input_prompt) {
         int input_value;
         if (std::cin >> input_value){ // If input is integer, pass from std::cin buffer into input_value variable
             if (input_value < 10 && input_value > 0) { // Check input range
-            std::cin.ignore(99999, '\n'); // Clear buffer for next input
+            std::cin.ignore(99999, '\n');   //Clears input buffer
             return input_value;
             
             }
+            // Invalid range input
+            else{
+                std::cout <<"Please input an integer between 1 and 9"<< std::endl;
+                std::cin.ignore(99999, '\n');
+            }
         }
+        // Invalid type input
         else {
-        // Invalid input
         std::cout << "Invalid Input" << std::endl;
-        std::cin.clear();   // Clear interface
+        std::cin.clear();   // Clears error flag
         std::cin.ignore(99999, '\n');
         }
     }
 }   
 
 // Computer move
-int comp_move(){
-    std::random_device rand; // Random number generated from hardware 
-    std::mt19937 mt_num(rand()); // Seed generator  
+int comp_move(std::mt19937& global_num){
     std::uniform_int_distribution<> distr(1, 9);  // Get integer between 1 to 9
-    return distr(mt_num);
+    return distr(global_num);
 }
 
 // Print board     
@@ -89,6 +92,9 @@ bool isFullboard(char board[3][3]) {
 
 int main() {
 
+    std::random_device rand; // Random number generated from hardware 
+    std::mt19937 mt_num(rand()); // Seed generator  
+
     // Begin with player X, user input
     const char playerX = 'X';
     const char playerO = 'O';
@@ -109,7 +115,7 @@ int main() {
         
         // Computer generated value
         if (current_player == playerO){
-            input_val = comp_move();
+            input_val = comp_move(mt_num);
         }
 
         // User input value
@@ -137,12 +143,18 @@ int main() {
 
         // Check for win 
         if (isWinner(myboard,current_player)){
+            if (current_player == playerX){
+                std::cout<<"You win the computer!"<<"\n";
+            }
+            else{
+                std::cout<<"You lost to amateur code. Shame"<<"\n";
+            }
         break;
        }
             
         // Check full board
         if (isFullboard(myboard)){
-            std::cout << "Game over!" <<std::endl;
+            std::cout << "Game over!" <<"\n";
             break;
         }
 
