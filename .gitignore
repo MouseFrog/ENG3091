@@ -40,6 +40,12 @@
 *.out
 *.app
 
+!Task_1/TTT.exe
+!Task_1/newton.exe
+!Task_1/fixed.exe
+!Task_2/multi.exe
+!Task_2/single.exe
+
 # debug information files
 *.dwo
 
