@@ -4,7 +4,9 @@
 
 DataGenerator::DataGenerator(Dataset c, std::mt19937& global_num) : data(c), mt_num(global_num) {    
     }
+
 // MAIN MATRIX GENERATOR 
+// Resize populate matrix with values
 Matrices DataGenerator::make_matrix(int sample_size, int num_features){    // Input # features and # data points
         Matrices matrix; 
 
@@ -12,7 +14,7 @@ Matrices DataGenerator::make_matrix(int sample_size, int num_features){    // In
         matrix.X.resize(sample_size,std::vector<double>(num_features+1));
         matrix.Y.resize(sample_size,std::vector<double>(1));
 
-        generate_data(matrix.X,matrix.Y); // Generate random variable data points
+        generate_data(matrix.X,matrix.Y); // Generate data points
         calc_noise(matrix.Y);   // Add noise to price matrix
         return matrix;
     }

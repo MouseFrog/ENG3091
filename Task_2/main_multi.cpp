@@ -35,8 +35,7 @@ int main() {
     // Normalised weights
     std::vector<double> model_weights = grad_model.getWeights();   
 
-    // Recover de-normalised results
-
+    // De-normalise results
     // real weight = normalised weight/standard deviation
     double real_bedroom = model_weights[1]/norm_X.std_devs[1];  
     double real_area = model_weights[2]/norm_X.std_devs[2];

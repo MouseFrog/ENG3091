@@ -46,7 +46,7 @@ void GradientDescent::train(const std::vector<std::vector<double>>& X,
         // Update weights using average gradient
         // Takes one step size away from calculated error
         for (int j = 0; j < n; j++) {
-            weights[j] -= (learningRate * gradients[j]) * (2.0/m);    // 2.0 to force floating pt. calculations
+            weights[j] -= (learningRate * gradients[j]) * (1.0/m);    // 2.0 to force floating pt. calculations
         }
 
         // Track magnitude of change between old and new weights
