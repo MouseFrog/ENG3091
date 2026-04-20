@@ -1,4 +1,7 @@
-// Linear and Logistic models inherit from base model Models
+// Base class for all regression models in the sklearn-lite library
+// LinearRegression, Logistic, BinaryLogistic, and MultiLogistic all inherit from Model
+// Provides shared Member variables and functions common to all models 
+
 // Binary and Multi-class inherit from Logistic model --> Binary is reduced version of Multi-class
 #ifndef SKLEARN_LITE_MODELS_HPP
 #define SKLEARN_LITE_MODELS_HPP
@@ -6,76 +9,131 @@
 #include <iostream>
 #include <vector>   
 #include <fstream>  // File operations
+#include <cmath>
 
 
 // Function to read csv file here
 
-// Normalise input variables
-// mean and standard deviation
+// Holds result of normalising a dataset
+// Carries scaled matrix plus mean and std_dev for each column
+// Taken directly from Assignment 1 Utilities.cpp
 struct NormResult {
     std::vector<std::vector<double>> matrix;
     std::vector<double> means;
     std::vector<double> std_devs;
 };
 
-// BASE MODEL for all models
+// Normalisation function for all three datasets 
+inline NormResult normaliseData (const std::vector<std::vector<double>>& X){
+
+    int m = X.size(); // Number of rows
+    int n = X[0].size() + 1; // Number of columns (including bias term)
+
+    NormResult result;
+
+    // Creating an empty matrix
+    result.matrix.resize(m, std::vector<double>(n));
+
+    // Setting first column of every row to 1 for bias term
+    for (int i = 0; i < m; i++) {
+        result.matrix[i][0] = 1.0; 
+    }
+
+    result.means.push_back(0.0); 
+    result.std_devs.push_back(1.0);
+
+    // Loop through each column (starting from 1 to skip bias term)
+       for (int j = 1; j < n; j++) {
+
+        // Add up all values in this feature column
+        double value_sum = 0.0;
+        for (int i = 0; i < m; i++) {
+            value_sum += X[i][j - 1]; 
+        }
+
+        // Divide by number of samples to get mean of this column
+        double mean = value_sum / m;
+        result.means.push_back(mean);
+
+        // Measures how spread out the values are around the mean
+        double error_sum = 0.0;
+        for (int i = 0; i < m; i++) {
+            error_sum += std::pow((X[i][j - 1] - mean), 2); 
+        } 
+
+        // Taken from Assignment 1
+        double std_dev = std::sqrt(error_sum / m);
+        result.std_devs.push_back(std_dev);
+
+        // If std_dev is 0 every value in this column is identical
+        // Set to 0 to avoid dividing by zero
+        if (std_dev == 0) {
+            for (int i = 0; i < m; i++) {
+                result.matrix[i][j] = 0.0;
+            }
+        }
+
+        // Shifts values so mean becomes 0, scales so spread becomes 1
+        else {
+            for (int i = 0; i < m; i++) {
+                result.matrix[i][j] = (X[i][j - 1] - mean) / std_dev;
+            }
+        }
+    }
+
+    return result; // Return scaled matrix with means and std_devs stored
+}
+
+
+
+// BASE CLASS for all models
 namespace sklearn_lite::linear {
 class Models {
 
     protected:
-    
-    double lr {}; // Update rule parameter required for all models, learning rate
-    int num_features {};
-    std::vector<std::vector<double>> weights {}; // Store calculated weights and biases
+        std::vector<double> weights; // Learned parameters, one per feature + bias 
+        double lr; // Learning rate
+        int iterations; // Max number of gradient descent steps 
 
     public:
-    Models(double lr, int num_features, const std::vector<std::vector<double>>& X, const std::vector<std::vector<double>>& Y) 
-    : lr{lr}, num_features{num_features}, X{X}, Y{Y} 
-    {
-        weights.resize(num_features+1, 0.0);
-    }
+    // Constructor sets learning rate and iterations
+    Models(double lr, int iterations) 
+         : lr{lr}, iterations{iterations} {}
 
-
-    // Function to access weights and biases common across all models
-    const std::vector<std::vector<double>>& get_weights() const{ //return by reference (large matrices), const to protect object
+    const std::vector<double>& get_weights() const {
         return weights;
     }
+};
+}
+
+ 
+    // Function to access weights and biases common across all models
+   // const std::vector<std::vector<double>>& get_weights() const{ //return by reference (large matrices), const to protect object
+        //return weights;
+   // }
 
     // Common Update Rule 
-    for (int j = 0; j < n; j++) {
-            weights[j] -= learningRate * gradients[j] * (1.0/m);    // 1.0 to force floating pt. calculations
-        }
+   // for (int j = 0; j < n; j++) {
+     //      weights[j] -= learningRate * gradients[j] * (1.0/m);    // 1.0 to force floating pt. calculations
+      //  }
 
 
    
-};
-} 
-
-// Linear Regression Model
-namespace sklearn_lite::linear {
-class LinearRegression : public Models {
-
-    private:
-
-    public:
-    LinearRegression():{}
-
-   
-};
-} 
+//};
+//} 
 
 
 // Logistic Regression class 
 // Base for Binary and Multi-class
-namespace sklearn_lite::linear {
-class Logistic : public Models {
+//namespace sklearn_lite::linear {
+//class Logistic : public Models {
 
-    private:
-    double reg_strength{};
+    //private:
+   // double reg_strength{};
 
-    public:
-    BinaryLogistic(double reg_strength):reg_strength{reg_strength}{
-    }
+    //public:
+    //BinaryLogistic(double reg_strength):reg_strength{reg_strength}{
+    //}
     // fit() function to train model
 
 
@@ -84,38 +142,38 @@ class Logistic : public Models {
     // Binary version sigmoid function in class Binary
 
    
-};
-} 
+//};
+//} 
 
 // Binary Logistic Regression
-namespace sklearn_lite::linear {
-class BinaryLogistic : public Logistic {
+//namespace sklearn_lite::linear {
+//class BinaryLogistic : public Logistic {
 
-    private:
-    double reg_strength{};
+    //private:
+    //double reg_strength{};
 
-    public:
-    BinaryLogistic():{}{
-    }
+    //public:
+    //BinaryLogistic():{}{
+    //}
     // fit() function to train model
         // Sigmoid
         // Regularised loss function
 
-    for (int i = 0; i < m; i++) {
+    //for (int i = 0; i < m; i++) {
 
-            double y_prediction{0};
+            //double y_prediction{0};
 
-            for (int j = 0; j < n; j++) {
-                y_prediction += weights[j] * X[i][j]; // Summation of weight * x-value for all variables 
-            }
+            //for (int j = 0; j < n; j++) {
+            //    y_prediction += weights[j] * X[i][j]; // Summation of weight * x-value for all variables 
+            //}
 
             // Discrepancy in y value prediction
-            double error = y_prediction - Y[i][0];  
+            //double error = y_prediction - Y[i][0];  
 
-            for (int j = 0; j < n; j++) {
-                gradients[j] += error * X[i][j]; // Calculate errors proportional to each data point
-            }
-        }
+            //for (int j = 0; j < n; j++) {
+                //gradients[j] += error * X[i][j]; // Calculate errors proportional to each data point
+            //}
+        //}
 
     // predict() function for a given variable set
     // Sigmoid function = Softmax when K=2, z0=0
@@ -126,18 +184,18 @@ class BinaryLogistic : public Logistic {
 
     
    
-};
-} 
+//};
+//} 
 
 // Multi-class Logistic Regression
-namespace sklearn_lite::linear {
-class MultiLogistic : public Logistic {
+//namespace sklearn_lite::linear {
+//class MultiLogistic : public Logistic {
 
-    private:
+   // private:
 
-    public:
-    MultiLogistic():{}{
-    }
+    //public:
+    //MultiLogistic():{}{
+    //}
 
     // fit() function to train model
         // Softmax function 
@@ -150,8 +208,8 @@ class MultiLogistic : public Logistic {
 
 
    
-};
-} 
+//};
+//} 
 
 
 
